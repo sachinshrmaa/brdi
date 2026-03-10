@@ -5,29 +5,29 @@ import html2canvas from "html2canvas";
 import { supabase } from "../lib/supabase";
 
 const VEHICLE_SIZES = {
-  'Small Pickup (1 ton)': 1,
-  'Large Pickup (2 tons)': 2,
-  'Small Truck (5 tons)': 5,
-  'Medium Truck (10 tons)': 10,
-  'Large Truck (20 tons)': 20,
-  'Trailer (30+ tons)': 30,
+  "Small Pickup (1 ton)": 1,
+  "Large Pickup (2 tons)": 2,
+  "Small Truck (5 tons)": 5,
+  "Medium Truck (10 tons)": 10,
+  "Large Truck (20 tons)": 20,
+  "Trailer (30+ tons)": 30,
 };
 
 const WASTE_TYPES = [
-  'Concrete Dominant Material',
-  'Brick-Concrete Mixed Material',
-  'Brick Dominant Material',
-  'Other Inert Mineral Material',
-  'Reinforced Concrete',
-  'Non-Reinforced Concrete',
-  'Brick Masonry Debris',
-  'Cement Mortar Debris',
-  'Concrete Blocks',
-  'Stone Rubble',
-  'Precast Concrete Elements',
-  'Ceramic and Cement-Based Tiles',
-  'Sand-Cement Plaster Debris',
-  'Inert Excavation Debris',
+  "Concrete Dominant Material",
+  "Brick-Concrete Mixed Material",
+  "Brick Dominant Material",
+  "Other Inert Mineral Material",
+  "Reinforced Concrete",
+  "Non-Reinforced Concrete",
+  "Brick Masonry Debris",
+  "Cement Mortar Debris",
+  "Concrete Blocks",
+  "Stone Rubble",
+  "Precast Concrete Elements",
+  "Ceramic and Cement-Based Tiles",
+  "Sand-Cement Plaster Debris",
+  "Inert Excavation Debris",
 ];
 
 const initialForm = {
@@ -76,11 +76,13 @@ export default function BookingPage() {
 
     checkAuth();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return;
-      setUser(session?.user || null);
-      setStage(session ? "form" : "auth");
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!mounted) return;
+        setUser(session?.user || null);
+        setStage(session ? "form" : "auth");
+      },
+    );
 
     return () => {
       mounted = false;
@@ -92,7 +94,10 @@ export default function BookingPage() {
     return VEHICLE_SIZES[formData.vehicle_size] || 0;
   }, [formData.vehicle_size]);
 
-  const amount = useMemo(() => calculateAmount(selectedVehicleTons), [selectedVehicleTons]);
+  const amount = useMemo(
+    () => calculateAmount(selectedVehicleTons),
+    [selectedVehicleTons],
+  );
 
   function onChange(event) {
     const { name, value } = event.target;
@@ -101,10 +106,18 @@ export default function BookingPage() {
 
   async function signInWithGoogle() {
     setErrorMessage("");
-    const redirectTo = import.meta.env.VITE_OAUTH_REDIRECT_URL || `${window.location.origin}/book`;
-    console.log('OAuth redirect URL:', redirectTo); // Debug: verify correct URL in production
+    let redirectTo = `${window.location.origin}/book`;
+
+    // In production, use the env variable which should have the full URL with /book path
+    if (import.meta.env.VITE_OAUTH_REDIRECT_URL) {
+      redirectTo = import.meta.env.VITE_OAUTH_REDIRECT_URL.endsWith("/book")
+        ? import.meta.env.VITE_OAUTH_REDIRECT_URL
+        : import.meta.env.VITE_OAUTH_REDIRECT_URL + "/book";
+    }
+
+    console.log("OAuth redirect URL:", redirectTo);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
         redirectTo,
       },
@@ -122,10 +135,10 @@ export default function BookingPage() {
       // Temporarily show hidden element so html2canvas can capture it
       const originalDisplay = pdfRef.current.style.display;
       pdfRef.current.style.display = "block";
-      
+
       // Wait for DOM to fully render
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(pdfRef.current, {
         scale: 2,
         allowTaint: true,
@@ -133,40 +146,55 @@ export default function BookingPage() {
         backgroundColor: "#ffffff",
         logging: false,
       });
-      
+
       // Hide element again
       pdfRef.current.style.display = originalDisplay;
-      
+
       // Validate canvas dimensions
-      if (!canvas.width || !canvas.height || canvas.width <= 0 || canvas.height <= 0) {
-        console.error("Canvas dimensions:", { width: canvas.width, height: canvas.height });
+      if (
+        !canvas.width ||
+        !canvas.height ||
+        canvas.width <= 0 ||
+        canvas.height <= 0
+      ) {
+        console.error("Canvas dimensions:", {
+          width: canvas.width,
+          height: canvas.height,
+        });
         throw new Error("Invalid canvas dimensions");
       }
-      
+
       // Use JPEG instead of PNG for better compatibility
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
       const pdf = new jsPDF("p", "mm", "a4");
-      
+
       // A4 page: 210mm x 297mm, with 10mm margins = 190mm x 277mm usable
       const maxWidth = 190;
       const maxHeight = 277;
-      
+
       // Calculate aspect ratio and fit to page
       const aspectRatio = canvas.width / canvas.height;
       let imgWidth = maxWidth;
       let imgHeight = maxWidth / aspectRatio;
-      
+
       // If height exceeds max, scale down width too
       if (imgHeight > maxHeight) {
         imgHeight = maxHeight;
         imgWidth = maxHeight * aspectRatio;
       }
-      
+
       // Final validation
-      if (!Number.isFinite(imgWidth) || !Number.isFinite(imgHeight) || imgWidth <= 0 || imgHeight <= 0) {
-        throw new Error(`Invalid calculated dimensions: ${imgWidth}x${imgHeight}`);
+      if (
+        !Number.isFinite(imgWidth) ||
+        !Number.isFinite(imgHeight) ||
+        imgWidth <= 0 ||
+        imgHeight <= 0
+      ) {
+        throw new Error(
+          `Invalid calculated dimensions: ${imgWidth}x${imgHeight}`,
+        );
       }
-      
+
       pdf.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
       pdf.save(`BRDI-Booking-${bookingResult.id}.pdf`);
     } catch (err) {
@@ -201,7 +229,8 @@ export default function BookingPage() {
 
     const payload = {
       user_id: user.id,
-      applicant_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
+      applicant_name:
+        user.user_metadata?.full_name || user.email?.split("@")[0] || "Unknown",
       email: user.email,
       phone: formData.phone,
       address: formData.address,
@@ -220,7 +249,9 @@ export default function BookingPage() {
     const { data, error } = await supabase
       .from("bookings")
       .insert(payload)
-      .select("id, applicant_name, appointment_at, amount, qr_token, created_at")
+      .select(
+        "id, applicant_name, appointment_at, amount, qr_token, created_at",
+      )
       .single();
 
     if (error) {
@@ -246,24 +277,71 @@ export default function BookingPage() {
     return (
       <section className="panel success-panel">
         {/* Hidden PDF content */}
-        <div ref={pdfRef} style={{ display: 'none', padding: '20px', background: '#fff', fontFamily: 'Arial, sans-serif' }}>
-          <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>BRDI</h1>
-          <h2 style={{ textAlign: 'center', fontSize: '16px', marginBottom: '20px' }}>Waste Drop-Off Booking Receipt</h2>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <p><strong>Booking ID:</strong> {bookingResult.id}</p>
-            <p><strong>Name:</strong> {bookingResult.applicant_name}</p>
-            <p><strong>Email:</strong> {user?.email}</p>
-            <p><strong>Appointment:</strong> {new Date(bookingResult.appointment_at).toLocaleString()}</p>
-            <p><strong>Amount Paid:</strong> ₹{Number(bookingResult.amount).toFixed(2)}</p>
+        <div
+          ref={pdfRef}
+          style={{
+            display: "none",
+            padding: "20px",
+            background: "#fff",
+            fontFamily: "Arial, sans-serif",
+          }}
+        >
+          <h1 style={{ textAlign: "center", marginBottom: "10px" }}>BRDI</h1>
+          <h2
+            style={{
+              textAlign: "center",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            Waste Drop-Off Booking Receipt
+          </h2>
+
+          <div style={{ marginBottom: "15px" }}>
+            <p>
+              <strong>Booking ID:</strong> {bookingResult.id}
+            </p>
+            <p>
+              <strong>Name:</strong> {bookingResult.applicant_name}
+            </p>
+            <p>
+              <strong>Email:</strong> {user?.email}
+            </p>
+            <p>
+              <strong>Appointment:</strong>{" "}
+              {new Date(bookingResult.appointment_at).toLocaleString()}
+            </p>
+            <p>
+              <strong>Amount Paid:</strong> ₹
+              {Number(bookingResult.amount).toFixed(2)}
+            </p>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
-            <p style={{ fontSize: '12px', marginBottom: '10px' }}>QR Code for Entry Gate</p>
-            <QRCodeSVG value={bookingResult.qr_token} size={150} includeMargin />
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "20px",
+              marginBottom: "20px",
+            }}
+          >
+            <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+              QR Code for Entry Gate
+            </p>
+            <QRCodeSVG
+              value={bookingResult.qr_token}
+              size={150}
+              includeMargin
+            />
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '10px', color: '#666' }}>
+          <div
+            style={{
+              textAlign: "center",
+              marginTop: "20px",
+              fontSize: "10px",
+              color: "#666",
+            }}
+          >
             <p>Present this QR code at the facility gate for entry.</p>
             <p>Generated: {new Date().toLocaleString()}</p>
           </div>
@@ -326,16 +404,31 @@ export default function BookingPage() {
     return (
       <section className="panel auth-panel">
         <h2>Sign In to Book Appointment</h2>
-        <p>Please sign in with your Google account to schedule a waste drop-off appointment.</p>
+        <p>
+          Please sign in with your Google account to schedule a waste drop-off
+          appointment.
+        </p>
 
         {errorMessage && <p className="error-text">{errorMessage}</p>}
 
         <button onClick={signInWithGoogle} className="google-btn">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-            <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.184L12.05 13.56c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
-            <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z" fill="#FBBC05"/>
-            <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+            <path
+              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+              fill="#4285F4"
+            />
+            <path
+              d="M9.003 18c2.43 0 4.467-.806 5.956-2.184L12.05 13.56c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z"
+              fill="#34A853"
+            />
+            <path
+              d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
+              fill="#EA4335"
+            />
           </svg>
           Continue with Google
         </button>
@@ -352,7 +445,8 @@ export default function BookingPage() {
         </button>
       </div>
       <p>
-        Signed in as <strong>{user?.email}</strong>. Fill the details below to schedule your appointment.
+        Signed in as <strong>{user?.email}</strong>. Fill the details below to
+        schedule your appointment.
       </p>
 
       {errorMessage && <p className="error-text">{errorMessage}</p>}
@@ -454,7 +548,7 @@ export default function BookingPage() {
               name="appointment_date"
               value={formData.appointment_date}
               onChange={onChange}
-              min={new Date().toISOString().split('T')[0]}
+              min={new Date().toISOString().split("T")[0]}
               required
             />
           </label>
@@ -470,7 +564,9 @@ export default function BookingPage() {
             />
           </label>
 
-          <button type="submit" className="full-width">Continue To Payment</button>
+          <button type="submit" className="full-width">
+            Continue To Payment
+          </button>
         </form>
       )}
 
@@ -478,10 +574,19 @@ export default function BookingPage() {
         <div className="payment-box">
           <h3>Payment Summary</h3>
           <div className="summary-details">
-            <p><strong>Vehicle:</strong> {formData.vehicle_size}</p>
-            <p><strong>Estimated Load:</strong> {selectedVehicleTons} tons</p>
-            <p><strong>Waste Type:</strong> {formData.waste_type}</p>
-            <p><strong>Appointment:</strong> {formData.appointment_date} at {formData.appointment_time}</p>
+            <p>
+              <strong>Vehicle:</strong> {formData.vehicle_size}
+            </p>
+            <p>
+              <strong>Estimated Load:</strong> {selectedVehicleTons} tons
+            </p>
+            <p>
+              <strong>Waste Type:</strong> {formData.waste_type}
+            </p>
+            <p>
+              <strong>Appointment:</strong> {formData.appointment_date} at{" "}
+              {formData.appointment_time}
+            </p>
           </div>
           <p className="price">Total: ₹{amount.toFixed(2)}</p>
 

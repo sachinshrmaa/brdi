@@ -50,19 +50,23 @@ VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE
 ## Troubleshooting
 
 ### "Redirect URI mismatch" error
+
 - Make sure the redirect URI in Google Cloud Console exactly matches: `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
 - Check for typos and ensure there's no trailing slash
 
 ### "OAuth client was not found"
+
 - Verify you copied the correct Client ID and Secret into Supabase
 - Try creating new credentials in Google Cloud Console
 
 ### Sign-in works but can't create booking
+
 - Check browser console for errors
 - Verify the `bookings` table policies allow authenticated users to insert with their own user_id
 - Run `supabase/schema.sql` again if needed
 
 ### User signed in but name shows as "Unknown"
+
 - Google OAuth might not have returned the full name
 - In Google Cloud Console → OAuth consent screen, ensure required scopes include profile/email
 - The app falls back to email prefix if full name is not available
@@ -71,13 +75,45 @@ VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE
 
 When deploying to production (e.g., Vercel, Netlify):
 
-1. Get your production URL (e.g., `https://your-app.vercel.app`)
-2. Add it to Google OAuth authorized redirect URIs:
-   - `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback` (already added)
-3. Update Supabase → Authentication → URL Configuration:
-   - Site URL: `https://your-app.vercel.app`
-   - Add your production URL to allowed redirect URLs
-4. Test the OAuth flow on production
+### 1. Environment Variables on Vercel
+
+1. Go to your Vercel project settings → Environment Variables
+2. Add or update `VITE_OAUTH_REDIRECT_URL=https://your-app.vercel.app/book` (must include `/book` path)
+3. Redeploy after setting the variable
+
+### 2. **CRITICAL: Configure Supabase Site URL** ⚠️
+
+This is the key to fixing the localhost redirect issue:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **Authentication** → **URL Configuration**
+3. Set **Site URL** to your production domain: `https://brdi.vercel.app`
+   - This tells Supabase where to redirect users after OAuth completes
+4. Add your production URL to **Redirect URLs** list: `https://brdi.vercel.app/book`
+5. Click **Save**
+
+### 3. Verify Google OAuth Settings
+
+1. In Google Cloud Console → OAuth credentials
+2. Ensure the redirect URI includes: `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
+3. Authorized JavaScript origins should include your production domain
+
+### How It Works
+
+- User clicks "Continue with Google" → redirected to Google
+- Google sends user back to `https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback`
+- Supabase uses **Site URL** setting to redirect user to: `https://brdi.vercel.app/book`
+- The **VITE_OAUTH_REDIRECT_URL** env var provides fallback path if Supabase config is missing
+
+### Troubleshooting localhost:3000 Redirect
+
+If you see `localhost:3000/#access_token`:
+
+1. ✅ First, check Supabase dashboard → Authentication → URL Configuration
+2. Verify **Site URL** is set to your production domain (not localhost)
+3. Check Vercel environment variables are deployed correctly
+4. Clear browser cache and try again
+5. Check browser console for error messages
 
 ## Notes
 
