@@ -19,6 +19,7 @@ create table public.bookings (
   payment_status text not null default 'paid',
   qr_token uuid not null unique,
   checked_in_at timestamptz,
+  cancelled_at timestamptz,
   actual_weight_tons numeric(10,2),
   created_at timestamptz not null default now()
 );
@@ -46,6 +47,15 @@ create policy "users_can_select_own_bookings"
   for select
   to authenticated
   using (auth.uid() = user_id);
+
+-- Users can cancel (update) their own bookings.
+drop policy if exists "users_can_update_own_bookings" on public.bookings;
+create policy "users_can_update_own_bookings"
+  on public.bookings
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- Admin users can read/update bookings.
 drop policy if exists "admins_can_select_bookings" on public.bookings;

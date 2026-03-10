@@ -23,33 +23,66 @@ export default function AdminPage() {
     let mounted = true
 
     async function bootstrap() {
-      const { data } = await supabase.auth.getSession()
-      if (!mounted) {
-        return
-      }
+      try {
+        const { data, error } = await supabase.auth.getSession()
 
-      const activeSession = data.session
-      setSession(activeSession)
+        if (!mounted) {
+          return
+        }
 
-      if (activeSession) {
-        await checkAdminAndLoad(activeSession.user.id)
-      } else {
-        setLoading(false)
+        if (error) {
+          setErrorMessage(error.message)
+          setSession(null)
+          setIsAdmin(false)
+          setBookings([])
+          return
+        }
+
+        const activeSession = data.session
+        setSession(activeSession)
+
+        if (activeSession) {
+          await checkAdminAndLoad(activeSession.user.id)
+        } else {
+          setIsAdmin(false)
+          setBookings([])
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        if (mounted) {
+          setErrorMessage(message)
+          setSession(null)
+          setIsAdmin(false)
+          setBookings([])
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
       }
     }
 
     bootstrap()
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setLoading(true)
       setSession(newSession)
       setScanResult(null)
       setErrorMessage('')
 
-      if (newSession) {
-        await checkAdminAndLoad(newSession.user.id)
-      } else {
+      try {
+        if (newSession) {
+          await checkAdminAndLoad(newSession.user.id)
+        } else {
+          setIsAdmin(false)
+          setBookings([])
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        setErrorMessage(message)
         setIsAdmin(false)
         setBookings([])
+      } finally {
         setLoading(false)
       }
     })
@@ -61,31 +94,35 @@ export default function AdminPage() {
   }, [])
 
   async function checkAdminAndLoad(userId) {
-    setLoading(true)
+    try {
+      const { data: adminRow, error: adminError } = await supabase
+        .from('admins')
+        .select('user_id')
+        .eq('user_id', userId)
+        .maybeSingle()
 
-    const { data: adminRow, error: adminError } = await supabase
-      .from('admins')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle()
+      if (adminError) {
+        setErrorMessage(adminError.message)
+        setIsAdmin(false)
+        setBookings([])
+        return
+      }
 
-    if (adminError) {
-      setErrorMessage(adminError.message)
+      if (!adminRow) {
+        setErrorMessage('You are signed in but not registered as an admin.')
+        setIsAdmin(false)
+        setBookings([])
+        return
+      }
+
+      setIsAdmin(true)
+      await loadBookings()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setErrorMessage(message)
       setIsAdmin(false)
-      setLoading(false)
-      return
+      setBookings([])
     }
-
-    if (!adminRow) {
-      setErrorMessage('You are signed in but not registered as an admin.')
-      setIsAdmin(false)
-      setLoading(false)
-      return
-    }
-
-    setIsAdmin(true)
-    await loadBookings()
-    setLoading(false)
   }
 
   async function loadBookings() {
@@ -100,6 +137,24 @@ export default function AdminPage() {
     }
 
     setBookings(data || [])
+  }
+
+  async function cancelBooking(bookingId) {
+    const confirmed = window.confirm('Are you sure you want to cancel this booking? This action cannot be undone.')
+    if (!confirmed) return
+
+    const { error } = await supabase
+      .from('bookings')
+      .update({ cancelled_at: new Date().toISOString() })
+      .eq('id', bookingId)
+
+    if (error) {
+      setErrorMessage(error.message)
+      return
+    }
+
+    await loadBookings()
+    setErrorMessage('')
   }
 
   const filteredBookings = useMemo(() => {
@@ -279,8 +334,8 @@ export default function AdminPage() {
   }
 
   return (
-    <section className="panel">
-      <div className="header-row">
+    <section className="panel admin-page">
+      <div className="header-row admin-header-row">
         <h2>Admin Dashboard</h2>
         <button className="secondary" onClick={logout}>Logout</button>
       </div>
@@ -316,13 +371,13 @@ export default function AdminPage() {
 
       <h3>All Bookings ({filteredBookings.length})</h3>
       
-      <div className="filters-bar">
+      <div className="filters-bar admin-filters-grid">
         <input
           type="text"
           placeholder="Search by name, email, vehicle, phone, ID..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          className="search-input admin-search-input"
         />
 
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
@@ -347,8 +402,8 @@ export default function AdminPage() {
         </select>
       </div>
 
-      <div className="table-wrap">
-        <table>
+      <div className="table-wrap admin-table-wrap">
+        <table className="admin-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -360,25 +415,44 @@ export default function AdminPage() {
               <th>Amount</th>
               <th>Appointment</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredBookings.map((booking) => (
-              <tr key={booking.id}>
-                <td>{booking.id}</td>
-                <td>{booking.applicant_name}</td>
-                <td>{booking.email}</td>
-                <td>{booking.vehicle_number}</td>
-                <td>{booking.waste_type}</td>
-                <td>{booking.estimated_weight_tons}</td>
-                <td>₹{Number(booking.amount).toFixed(2)}</td>
-                <td>{new Date(booking.appointment_at).toLocaleString()}</td>
-                <td>{booking.checked_in_at ? '✓ Checked In' : 'Pending'}</td>
+              <tr key={booking.id} className={booking.cancelled_at ? 'cancelled-row' : ''}>
+                <td data-label="ID">{booking.id}</td>
+                <td data-label="Name">{booking.applicant_name}</td>
+                <td data-label="Email">{booking.email}</td>
+                <td data-label="Vehicle">{booking.vehicle_number}</td>
+                <td data-label="Waste Type">{booking.waste_type}</td>
+                <td data-label="Weight (t)">{booking.estimated_weight_tons}</td>
+                <td data-label="Amount">₹{Number(booking.amount).toFixed(2)}</td>
+                <td data-label="Appointment">{new Date(booking.appointment_at).toLocaleString()}</td>
+                <td data-label="Status">
+                  {booking.cancelled_at ? (
+                    <span className="status-badge cancelled">✗ Cancelled</span>
+                  ) : booking.checked_in_at ? (
+                    <span className="status-badge checked-in">✓ Checked In</span>
+                  ) : (
+                    <span className="status-badge pending">⏱ Pending</span>
+                  )}
+                </td>
+                <td data-label="Action">
+                  {!booking.cancelled_at && !booking.checked_in_at && (
+                    <button 
+                      className="btn-cancel small" 
+                      onClick={() => cancelBooking(booking.id)}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {filteredBookings.length === 0 && (
               <tr>
-                <td colSpan="9">No bookings match your filters.</td>
+                <td colSpan="10">No bookings match your filters.</td>
               </tr>
             )}
           </tbody>

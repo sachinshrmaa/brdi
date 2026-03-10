@@ -11,6 +11,9 @@ React + Supabase web app for scheduling waste drop-off appointments at a mineral
 - **Automated Pricing**: Calculates fees based on estimated tonnage
 - **Payment Confirmation**: Simple in-app payment simulation
 - **QR Code Generation**: Unique QR code issued upon successful booking for facility entry
+- **My Bookings Dashboard**: View all previous bookings with status (Pending/Checked In/Cancelled)
+- **PDF Download**: Download booking receipt with QR code for each booking
+- **Cancel Booking**: Cancel pending bookings before check-in
 
 ### Admin Portal
 - **Secure Login**: Admin authentication via Supabase Auth
@@ -20,6 +23,9 @@ React + Supabase web app for scheduling waste drop-off appointments at a mineral
 - **Sort Options**: By date, appointment time, or amount
 - **QR Verification**: Scan/verify QR tokens at entry gate
 - **Check-In System**: Mark bookings as checked-in upon entry
+- **Cancel Bookings**: Admin can cancel any pending booking
+- **Invalid Booking Handling**: Proper error messages for invalid/cancelled QR codes
+- **Responsive Design**: Mobile-friendly admin dashboard and tables
 - **Statistics Dashboard**: 
   - Total bookings, revenue, and waste tonnage
   - Average weight per booking
@@ -69,6 +75,7 @@ React + Supabase web app for scheduling waste drop-off appointments at a mineral
 3. **Run Database Schema**:
    - Open SQL Editor in Supabase
    - Run the contents of `supabase/schema.sql`
+   - **If you already have an existing database**, run `supabase/migration_add_cancel.sql` to add the cancel booking feature
 
 4. **Create Admin User**:
    - In Supabase Auth, create an admin user (email/password or via Google)
@@ -124,6 +131,7 @@ npm run dev
 - `payment_status` - Default 'paid'
 - `qr_token` - Unique UUID for entry
 - `checked_in_at` - Timestamp when checked in
+- `cancelled_at` - Timestamp when booking was cancelled (optional)
 - `actual_weight_tons` - Can be updated post-entry
 - `created_at` - Record creation timestamp
 
@@ -145,16 +153,49 @@ npm run dev
 - **Pricing**: Calculated as: `Base Fee ($20) + (Tons × $35/ton)`, minimum $50.
 - **Admin Detection**: The app automatically detects admin users and adjusts navigation accordingly.
 
-## Production (Vercel) Checklist
+## Production (Vercel) Deployment
 
-- Add `vercel.json` rewrite so React Router routes like `/book`, `/admin`, and `/my-bookings` resolve to `index.html` on refresh.
-- In Supabase Auth settings:
-   - Set `Site URL` to your production app URL (for example `https://your-app.vercel.app`).
-   - Add local and production URLs to `Redirect URLs` (for example `http://localhost:5173/book` and `https://your-app.vercel.app/book`).
-- In Google Cloud OAuth client:
-   - Authorized redirect URI must include your Supabase callback: `https://<your-project-ref>.supabase.co/auth/v1/callback`.
-   - You do not add your app URL as the Google callback URI directly for Supabase OAuth.
-- In Vercel environment variables:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_OAUTH_REDIRECT_URL=https://your-app.vercel.app/book`
+### 1. Vercel Configuration
+- The `vercel.json` file is already configured to handle SPA routing (all routes serve `index.html`)
+
+### 2. Supabase Authentication Settings
+Go to **Supabase Dashboard → Authentication → URL Configuration**:
+
+- **Redirect URLs** (add both local and production):
+  ```
+  http://localhost:5173/**
+  https://your-app.vercel.app/**
+  ```
+  The `**` wildcard allows all routes like `/book`, `/admin`, etc.
+
+**Note**: Some Supabase versions auto-detect the site URL from the first successful auth. If you don't see a "Site URL" field, just ensure your production domain is in the Redirect URLs list above.
+
+### 3. Google Cloud OAuth Configuration
+Go to **Google Cloud Console → APIs & Services → Credentials → Your OAuth Client**:
+
+- **Authorized JavaScript origins**:
+  ```
+  https://your-app.vercel.app
+  ```
+
+- **Authorized redirect URIs** (add your Supabase callback):
+  ```
+  https://<your-project-ref>.supabase.co/auth/v1/callback
+  ```
+  Replace `<your-project-ref>` with your actual Supabase project reference (found in your Supabase project URL).
+
+**Important**: Do NOT add `https://your-app.vercel.app/book` to Google Console. Google redirects to Supabase, which then redirects to your app.
+
+### 4. Vercel Environment Variables
+Set these in **Vercel Dashboard → Your Project → Settings → Environment Variables**:
+
+```
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGc...
+VITE_OAUTH_REDIRECT_URL=https://your-app.vercel.app/book
+```
+
+Replace `your-app.vercel.app` with your actual Vercel deployment URL.
+
+### 5. Deploy
+Push to Git or use Vercel CLI. The deployment will pick up the new environment variables automatically.

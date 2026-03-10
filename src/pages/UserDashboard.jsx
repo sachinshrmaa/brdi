@@ -121,6 +121,41 @@ export default function UserDashboard() {
     window.location.href = "/";
   }
 
+  async function cancelBooking(bookingId) {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this booking? This action cannot be undone."
+    );
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ cancelled_at: new Date().toISOString() })
+        .eq("id", bookingId);
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      // Reload bookings
+      const { data, error: fetchError } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) {
+        setErrorMessage(fetchError.message);
+      } else {
+        setBookings(data || []);
+        setErrorMessage("");
+      }
+    } catch (err) {
+      setErrorMessage("Failed to cancel booking. Please try again.");
+    }
+  }
+
   if (loading) {
     return (
       <section className="panel">
@@ -269,7 +304,13 @@ export default function UserDashboard() {
                   <h3>Booking #{booking.id}</h3>
                   <p>
                     <strong>Status:</strong>{" "}
-                    {booking.checked_in_at ? "✓ Checked In" : "Pending"}
+                    {booking.cancelled_at ? (
+                      <span className="status-badge cancelled">✗ Cancelled</span>
+                    ) : booking.checked_in_at ? (
+                      <span className="status-badge checked-in">✓ Checked In</span>
+                    ) : (
+                      <span className="status-badge pending">⏱ Pending</span>
+                    )}
                   </p>
                   <p>
                     <strong>Appointment:</strong>{" "}
@@ -296,15 +337,26 @@ export default function UserDashboard() {
                     alignItems: "center",
                   }}
                 >
-                  <div className="qr-small">
-                    <QRCodeSVG value={booking.qr_token} size={100} />
-                  </div>
+                  {!booking.cancelled_at && (
+                    <div className="qr-small">
+                      <QRCodeSVG value={booking.qr_token} size={100} />
+                    </div>
+                  )}
                   <button
                     onClick={() => downloadPDF(booking)}
                     className="secondary small"
+                    disabled={booking.cancelled_at}
                   >
                     Download PDF
                   </button>
+                  {!booking.cancelled_at && !booking.checked_in_at && (
+                    <button
+                      onClick={() => cancelBooking(booking.id)}
+                      className="btn-cancel small"
+                    >
+                      Cancel Booking
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

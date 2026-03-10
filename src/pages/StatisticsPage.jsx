@@ -133,13 +133,13 @@ export default function StatisticsPage() {
   }
 
   return (
-    <section className="panel">
+    <section className="panel stats-page">
       <h2>Statistics Dashboard</h2>
       <p>Overview of all waste drop-offs and revenue.</p>
 
       {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-      <div className="stats-grid">
+      <div className="stats-grid stats-dashboard-grid">
         <div className="stat-card">
           <h3>Total Bookings</h3>
           <p className="stat-value">{stats.totalBookings}</p>
@@ -172,8 +172,8 @@ export default function StatisticsPage() {
       </div>
 
       <h3>Waste Type Breakdown</h3>
-      <div className="table-wrap">
-        <table>
+      <div className="table-wrap stats-table-wrap">
+        <table className="stats-table">
           <thead>
             <tr>
               <th>Waste Type</th>
@@ -185,10 +185,10 @@ export default function StatisticsPage() {
           <tbody>
             {wasteTypeStats.map((item) => (
               <tr key={item.type}>
-                <td>{item.type}</td>
-                <td>{item.count}</td>
-                <td>{item.weight.toFixed(2)}</td>
-                <td>₹{item.revenue.toFixed(2)}</td>
+                <td data-label="Waste Type">{item.type}</td>
+                <td data-label="Count">{item.count}</td>
+                <td data-label="Total Weight (tons)">{item.weight.toFixed(2)}</td>
+                <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
               </tr>
             ))}
             {wasteTypeStats.length === 0 && (
@@ -201,8 +201,8 @@ export default function StatisticsPage() {
       </div>
 
       <h3>Vehicle Size Breakdown</h3>
-      <div className="table-wrap">
-        <table>
+      <div className="table-wrap stats-table-wrap">
+        <table className="stats-table">
           <thead>
             <tr>
               <th>Vehicle Size</th>
@@ -214,10 +214,10 @@ export default function StatisticsPage() {
           <tbody>
             {vehicleSizeStats.map((item) => (
               <tr key={item.size}>
-                <td>{item.size}</td>
-                <td>{item.count}</td>
-                <td>{item.weight.toFixed(2)}</td>
-                <td>₹{item.revenue.toFixed(2)}</td>
+                <td data-label="Vehicle Size">{item.size}</td>
+                <td data-label="Count">{item.count}</td>
+                <td data-label="Total Weight (tons)">{item.weight.toFixed(2)}</td>
+                <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
               </tr>
             ))}
             {vehicleSizeStats.length === 0 && (

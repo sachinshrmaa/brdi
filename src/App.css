@@ -86,6 +86,18 @@ nav a.active {
   gap: 0.9rem;
 }
 
+.admin-login {
+  display: grid;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.admin-login label {
+  display: grid;
+  gap: 0.5rem;
+}
+
 label {
   display: grid;
   gap: 0.35rem;
@@ -288,6 +300,33 @@ th {
   min-width: 150px;
 }
 
+.admin-page .admin-filters-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(150px, 0.7fr));
+  gap: 0.6rem;
+  align-items: stretch;
+}
+
+.admin-page .admin-search-input {
+  min-width: 0;
+}
+
+.admin-page .admin-table {
+  min-width: 980px;
+}
+
+.admin-page .admin-header-row {
+  gap: 0.8rem;
+}
+
+.stats-page .stats-dashboard-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.stats-page .stats-table {
+  min-width: 760px;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -453,6 +492,169 @@ th {
   border-radius: 0.6rem;
 }
 
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fff4e6;
+  color: #e67700;
+}
+
+.status-badge.checked-in {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.cancelled {
+  background: #ffebee;
+  color: #c62828;
+  text-decoration: line-through;
+}
+
+.cancelled-row {
+  opacity: 0.6;
+  background: #fafafa;
+}
+
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-cancel:hover {
+  background: #c82333;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Tables */
+@media (max-width: 1024px) {
+  .table-wrap table {
+    min-width: 800px;
+  }
+
+  .admin-page .admin-filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters-bar {
+    flex-wrap: wrap;
+  }
+
+  .filters-bar select,
+  .search-input {
+    min-width: 140px;
+    flex: 1 1 auto;
+  }
+
+  .scan-box {
+    padding: 0.8rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-page .admin-filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-page .admin-table-wrap,
+  .stats-page .stats-table-wrap {
+    border: none;
+    overflow-x: visible;
+  }
+
+  .admin-page .admin-table,
+  .stats-page .stats-table {
+    min-width: 100%;
+    border: none;
+  }
+
+  .admin-page .admin-table thead,
+  .stats-page .stats-table thead {
+    display: none;
+  }
+
+  .admin-page .admin-table tbody tr,
+  .stats-page .stats-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .admin-page .admin-table tbody tr.cancelled-row {
+    background: #fafafa;
+  }
+
+  .admin-page .admin-table td,
+  .stats-page .stats-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-bottom: 1px solid #edf0f5;
+    padding: 0.7rem 0.9rem;
+    text-align: right;
+  }
+
+  .admin-page .admin-table td:last-child,
+  .stats-page .stats-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin-page .admin-table td::before,
+  .stats-page .stats-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  .admin-page .admin-table td[data-label="Action"] {
+    justify-content: flex-end;
+  }
+
+  .admin-page .admin-table td[data-label="Action"]::before {
+    display: none;
+  }
+
+  .admin-page .admin-header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-page .admin-header-row button {
+    width: 100%;
+  }
+
+  .stats-page .stats-dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .stats-page .stats-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Media Queries */
 @media (max-width: 800px) {
   .booking-form,
@@ -495,6 +697,109 @@ th {
 
   .admin-breadcrumb {
     font-size: 0.8rem;
+  }
+
+  /* Responsive table for admin dashboard */
+  .table-wrap {
+    border: none;
+    overflow-x: visible;
+  }
+
+  table {
+    min-width: 100%;
+    border: none;
+  }
+
+  table thead {
+    display: none;
+  }
+
+  table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: white;
+  }
+
+  table tbody tr.cancelled-row {
+    background: #fafafa;
+  }
+
+  table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    text-align: right;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  table td:last-child {
+    border-bottom: none;
+  }
+
+  table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    text-align: left;
+    margin-right: 1rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  table td[data-label="Action"] {
+    justify-content: flex-end;
+  }
+
+  table td[data-label="Action"]:before {
+    display: none;
+  }
+
+  /* Mobile scan box */
+  .scan-box {
+    padding: 1rem;
+  }
+
+  .scan-box h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .scan-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .scan-row input {
+    width: 100%;
+  }
+
+  .scan-row button {
+    width: 100%;
+  }
+
+  /* Mobile filters */
+  .filters-bar select {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  /* Header row on mobile */
+  .header-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .header-row h2 {
+    margin: 0;
+  }
+
+  .header-row button {
+    width: 100%;
   }
 
   .bookings-table {
@@ -552,3 +857,74 @@ th {
     gap: 0.8rem;
   }
 }
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .app-shell {
+    margin: 0.5rem auto;
+    padding: 0.5rem;
+  }
+
+  .panel {
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .small {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  table td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  table td:before {
+    font-size: 0.8rem;
+  }
+
+  .scan-result p {
+    font-size: 0.9rem;
+  }
+
+  .filters-bar {
+    gap: 0.5rem;
+  }
+
+  input, select, textarea {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .landing-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .qr-wrap {
+    transform: scale(0.9);
+  }
+}
+

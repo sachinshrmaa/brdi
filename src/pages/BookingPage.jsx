@@ -102,6 +102,7 @@ export default function BookingPage() {
   async function signInWithGoogle() {
     setErrorMessage("");
     const redirectTo = import.meta.env.VITE_OAUTH_REDIRECT_URL || `${window.location.origin}/book`;
+    console.log('OAuth redirect URL:', redirectTo); // Debug: verify correct URL in production
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
