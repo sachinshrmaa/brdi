@@ -1,0 +1,554 @@
+.app-shell {
+  width: min(1120px, 100% - 2rem);
+  margin: 2rem auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  padding: 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: linear-gradient(120deg, rgba(30, 108, 130, 0.95), rgba(22, 82, 102, 0.95));
+}
+
+.header-logo {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.header-logo div {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-logo h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.8rem, 4vw, 2.2rem);
+}
+
+.header-logo .eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+
+nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+nav a.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: 0 20px 45px rgba(62, 63, 92, 0.08);
+}
+
+.booking-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  padding: 0.65rem 0.7rem;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.payment-box,
+.scan-box {
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  background: #fff;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.payment-actions,
+.header-row,
+.scan-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.header-row {
+  justify-content: space-between;
+}
+
+.error-text {
+  color: #ba1a1a;
+  background: #ffefef;
+  border: 1px solid #ffd9d9;
+  border-radius: 0.7rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.success-panel {
+  text-align: left;
+}
+
+.qr-wrap {
+  margin: 1rem 0;
+  background: #fff;
+  border: 1px dashed var(--border);
+  border-radius: 0.8rem;
+  display: inline-flex;
+  padding: 0.7rem;
+}
+
+.receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: #fff;
+}
+
+th,
+td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #edf0f5;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+th {
+  background: #f4f6fb;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 0.7rem 1.2rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.google-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.auth-panel {
+  text-align: center;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.small {
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.summary-details {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  background: #f8f9fc;
+  border-radius: 0.6rem;
+}
+
+.summary-details p {
+  margin: 0.3rem 0;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filters-bar select {
+  min-width: 150px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #fff, #f9fbff);
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-card h3 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent);
+}
+
+.scan-result {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: #f0f8f4;
+  border: 1px solid #c3e6d3;
+  border-radius: 0.7rem;
+}
+
+.scan-result p {
+  margin: 0.3rem 0;
+}
+
+/* Landing Page */
+.landing-page {
+  text-align: center;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.landing-hero {
+  margin-bottom: 2rem;
+}
+
+.landing-hero h1 {
+  font-size: 3rem;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, #1e6c82, #0d4a61);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin: 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #777;
+  margin: 0.25rem 0 2rem;
+}
+
+.landing-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 1rem 1.5rem;
+  border-radius: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1e6c82, #0d4a61);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(30, 108, 130, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 108, 130, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: #1e6c82;
+  border: 2px solid #1e6c82;
+}
+
+.btn-secondary:hover {
+  background: #f5f9fb;
+}
+
+.landing-info {
+  background: #f8f9fc;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.landing-info h2 {
+  margin-top: 0;
+}
+
+.landing-info p {
+  margin: 0.5rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Bookings List */
+.bookings-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.booking-card {
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.booking-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.booking-card p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.qr-small {
+  background: #fff;
+  border: 1px dashed var(--border);
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+}
+
+/* Media Queries */
+@media (max-width: 800px) {
+  .booking-form,
+  .receipt-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    width: min(1120px, 100% - 1rem);
+    margin: 1rem auto;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-breadcrumb {
+    font-size: 0.8rem;
+  }
+
+  .bookings-table {
+    font-size: 0.8rem;
+  }
+
+  .bookings-table thead {
+    display: none;
+  }
+
+  .bookings-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .bookings-table td {
+    display: block;
+    padding: 0.6rem;
+    text-align: right;
+    border: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bookings-table td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+
+  .landing-hero h1 {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .landing-buttons {
+    gap: 0.8rem;
+  }
+}
