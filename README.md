@@ -144,3 +144,17 @@ npm run dev
 - **Google OAuth**: Ensure your Supabase project has Google OAuth properly configured with valid credentials and redirect URIs.
 - **Pricing**: Calculated as: `Base Fee ($20) + (Tons × $35/ton)`, minimum $50.
 - **Admin Detection**: The app automatically detects admin users and adjusts navigation accordingly.
+
+## Production (Vercel) Checklist
+
+- Add `vercel.json` rewrite so React Router routes like `/book`, `/admin`, and `/my-bookings` resolve to `index.html` on refresh.
+- In Supabase Auth settings:
+   - Set `Site URL` to your production app URL (for example `https://your-app.vercel.app`).
+   - Add local and production URLs to `Redirect URLs` (for example `http://localhost:5173/book` and `https://your-app.vercel.app/book`).
+- In Google Cloud OAuth client:
+   - Authorized redirect URI must include your Supabase callback: `https://<your-project-ref>.supabase.co/auth/v1/callback`.
+   - You do not add your app URL as the Google callback URI directly for Supabase OAuth.
+- In Vercel environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_OAUTH_REDIRECT_URL=https://your-app.vercel.app/book`
