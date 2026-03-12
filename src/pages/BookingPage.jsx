@@ -203,13 +203,6 @@ export default function BookingPage() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    setFormData(initialForm);
-    setBookingResult(null);
-    setStage("auth");
-  }
-
   function onReview(event) {
     event.preventDefault();
     setErrorMessage("");
@@ -286,16 +279,56 @@ export default function BookingPage() {
             fontFamily: "Arial, sans-serif",
           }}
         >
-          <h1 style={{ textAlign: "center", marginBottom: "10px" }}>BRDI</h1>
-          <h2
+          <div
             style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               textAlign: "center",
-              fontSize: "16px",
+              borderBottom: "1px solid #dbe4ee",
+              paddingBottom: "16px",
               marginBottom: "20px",
             }}
           >
-            Waste Drop-Off Booking Receipt
-          </h2>
+            <img
+              src="/balkapso-logo.jpg"
+              alt="Balkapso logo"
+              style={{
+                height: "64px",
+                width: "auto",
+                objectFit: "contain",
+                marginBottom: "12px",
+              }}
+            />
+            <h1
+              style={{
+                fontSize: "20px",
+                margin: "0 0 6px",
+                color: "#0f172a",
+              }}
+            >
+              Balkapso Research and Development Institute
+            </h1>
+            <p
+              style={{ margin: "0 0 4px", fontSize: "13px", color: "#475569" }}
+            >
+              Gangtok, Sikkim - 737101
+            </p>
+            <p
+              style={{ margin: "0 0 14px", fontSize: "13px", color: "#475569" }}
+            >
+              contact@balkapso.com - +917076219337
+            </p>
+            <h2
+              style={{
+                textAlign: "center",
+                fontSize: "16px",
+                margin: 0,
+              }}
+            >
+              Waste Drop-Off Booking Receipt
+            </h2>
+          </div>
 
           <div style={{ marginBottom: "15px" }}>
             <p>
@@ -392,9 +425,6 @@ export default function BookingPage() {
           >
             Create Another Booking
           </button>
-          <button className="secondary" onClick={signOut}>
-            Sign Out
-          </button>
         </div>
       </section>
     );
@@ -440,9 +470,6 @@ export default function BookingPage() {
     <section className="panel">
       <div className="header-row">
         <h2>Construction Waste Booking</h2>
-        <button className="secondary small" onClick={signOut}>
-          Sign Out
-        </button>
       </div>
       <p>
         Signed in as <strong>{user?.email}</strong>. Fill the details below to
