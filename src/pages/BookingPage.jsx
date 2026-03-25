@@ -99,6 +99,18 @@ export default function BookingPage() {
     [selectedVehicleTons],
   );
 
+  const currentStageIndex =
+    stage === "payment" ? 2 : stage === "success" ? 3 : 1;
+  const stageItems = [
+    { key: "form", label: "Booking Details" },
+    { key: "payment", label: "Payment Review" },
+    { key: "success", label: "Confirmation" },
+  ];
+  const appointmentPreview =
+    formData.appointment_date && formData.appointment_time
+      ? `${formData.appointment_date} at ${formData.appointment_time}`
+      : "Not selected";
+
   function onChange(event) {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -383,6 +395,9 @@ export default function BookingPage() {
         {/* Visible content */}
         <h2>Booking Confirmed</h2>
         <p>
+          <span className="status-badge pending">Pending Gate Check-In</span>
+        </p>
+        <p>
           Your waste drop-off appointment is confirmed. Present this QR code at
           the facility gate.
         </p>
@@ -412,9 +427,7 @@ export default function BookingPage() {
         </div>
 
         <div className="button-row">
-          <button onClick={downloadBookingPDF}>
-            📥 Download Receipt as PDF
-          </button>
+          <button onClick={downloadBookingPDF}>Download Receipt as PDF</button>
           <button
             className="secondary"
             onClick={() => {
@@ -467,166 +480,238 @@ export default function BookingPage() {
   }
 
   return (
-    <section className="panel">
+    <section className="panel booking-shell">
       <div className="header-row">
-        <h2>Construction Waste Booking</h2>
+        <div>
+          <h2>Construction Waste Booking</h2>
+          <p className="muted-text">
+            Signed in as <strong>{user?.email}</strong>
+          </p>
+        </div>
       </div>
-      <p>
-        Signed in as <strong>{user?.email}</strong>. Fill the details below to
-        schedule your appointment.
-      </p>
+
+      <div className="booking-progress" role="list" aria-label="Booking steps">
+        {stageItems.map((item, index) => {
+          const position = index + 1;
+          const stateClass =
+            position < currentStageIndex
+              ? "done"
+              : position === currentStageIndex
+                ? "active"
+                : "";
+
+          return (
+            <div
+              key={item.key}
+              className={`progress-step ${stateClass}`.trim()}
+              role="listitem"
+            >
+              <small>Step {position}</small>
+              <p>{item.label}</p>
+            </div>
+          );
+        })}
+      </div>
 
       {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-      {stage === "form" && (
-        <form className="booking-form" onSubmit={onReview}>
-          <label>
-            Phone Number
-            <input
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={onChange}
-              placeholder="+1 234 567 8900"
-              required
-            />
-          </label>
+      <div className="booking-layout">
+        <div className="booking-main">
+          {stage === "form" && (
+            <form className="booking-form" onSubmit={onReview}>
+              <div className="booking-form-section full-width">
+                <h3>Contact Details</h3>
+                <div className="booking-form-grid">
+                  <label>
+                    Phone Number
+                    <input
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={onChange}
+                      placeholder="+91 98765 43210"
+                      required
+                    />
+                  </label>
 
-          <label className="full-width">
-            Address
-            <input
-              name="address"
-              value={formData.address}
-              onChange={onChange}
-              placeholder="Street address, city, state, zip"
-              required
-            />
-          </label>
+                  <label className="full-width">
+                    Address
+                    <input
+                      name="address"
+                      value={formData.address}
+                      onChange={onChange}
+                      placeholder="Street address, city, state, pin"
+                      required
+                    />
+                  </label>
+                </div>
+              </div>
 
-          <label>
-            Vehicle Number
-            <input
-              name="vehicle_number"
-              value={formData.vehicle_number}
-              onChange={onChange}
-              placeholder="ABC-1234"
-              required
-            />
-          </label>
+              <div className="booking-form-section full-width">
+                <h3>Vehicle and Driver</h3>
+                <div className="booking-form-grid">
+                  <label>
+                    Vehicle Number
+                    <input
+                      name="vehicle_number"
+                      value={formData.vehicle_number}
+                      onChange={onChange}
+                      placeholder="SK-01-AB-1234"
+                      required
+                    />
+                  </label>
 
-          <label>
-            Vehicle Size
-            <select
-              name="vehicle_size"
-              value={formData.vehicle_size}
-              onChange={onChange}
-              required
-            >
-              <option value="">Select vehicle size</option>
-              {Object.keys(VEHICLE_SIZES).map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </label>
+                  <label>
+                    Vehicle Size
+                    <select
+                      name="vehicle_size"
+                      value={formData.vehicle_size}
+                      onChange={onChange}
+                      required
+                    >
+                      <option value="">Select vehicle size</option>
+                      {Object.keys(VEHICLE_SIZES).map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
-          <label>
-            Driver Name
-            <input
-              name="driver_name"
-              value={formData.driver_name}
-              onChange={onChange}
-              required
-            />
-          </label>
+                  <label>
+                    Driver Name
+                    <input
+                      name="driver_name"
+                      value={formData.driver_name}
+                      onChange={onChange}
+                      required
+                    />
+                  </label>
 
-          <label>
-            Driver License Number (Optional)
-            <input
-              name="driver_license"
-              value={formData.driver_license}
-              onChange={onChange}
-              placeholder="DL123456"
-            />
-          </label>
+                  <label>
+                    Driver License Number (Optional)
+                    <input
+                      name="driver_license"
+                      value={formData.driver_license}
+                      onChange={onChange}
+                      placeholder="DL123456"
+                    />
+                  </label>
+                </div>
+              </div>
 
-          <label className="full-width">
-            Waste Type
-            <select
-              name="waste_type"
-              value={formData.waste_type}
-              onChange={onChange}
-              required
-            >
-              <option value="">Select waste type</option>
-              {WASTE_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </label>
+              <div className="booking-form-section full-width">
+                <h3>Waste and Appointment</h3>
+                <div className="booking-form-grid">
+                  <label className="full-width">
+                    Waste Type
+                    <select
+                      name="waste_type"
+                      value={formData.waste_type}
+                      onChange={onChange}
+                      required
+                    >
+                      <option value="">Select waste type</option>
+                      {WASTE_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
-          <label>
-            Appointment Date
-            <input
-              type="date"
-              name="appointment_date"
-              value={formData.appointment_date}
-              onChange={onChange}
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
-          </label>
+                  <label>
+                    Appointment Date
+                    <input
+                      type="date"
+                      name="appointment_date"
+                      value={formData.appointment_date}
+                      onChange={onChange}
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                    />
+                  </label>
 
-          <label>
-            Appointment Time
-            <input
-              type="time"
-              name="appointment_time"
-              value={formData.appointment_time}
-              onChange={onChange}
-              required
-            />
-          </label>
+                  <label>
+                    Appointment Time
+                    <input
+                      type="time"
+                      name="appointment_time"
+                      value={formData.appointment_time}
+                      onChange={onChange}
+                      required
+                    />
+                  </label>
+                </div>
+              </div>
 
-          <button type="submit" className="full-width">
-            Continue To Payment
-          </button>
-        </form>
-      )}
+              <button type="submit" className="full-width">
+                Continue to Payment Review
+              </button>
+            </form>
+          )}
 
-      {stage === "payment" && (
-        <div className="payment-box">
-          <h3>Payment Summary</h3>
-          <div className="summary-details">
-            <p>
-              <strong>Vehicle:</strong> {formData.vehicle_size}
-            </p>
-            <p>
-              <strong>Estimated Load:</strong> {selectedVehicleTons} tons
-            </p>
-            <p>
-              <strong>Waste Type:</strong> {formData.waste_type}
-            </p>
-            <p>
-              <strong>Appointment:</strong> {formData.appointment_date} at{" "}
-              {formData.appointment_time}
-            </p>
-          </div>
-          <p className="price">Total: ₹{amount.toFixed(2)}</p>
+          {stage === "payment" && (
+            <div className="payment-box">
+              <h3>Confirm Payment and Booking</h3>
+              <p className="muted-text">
+                Review your details before confirming payment.
+              </p>
+              <div className="summary-details">
+                <p>
+                  <strong>Phone:</strong> {formData.phone}
+                </p>
+                <p>
+                  <strong>Vehicle:</strong> {formData.vehicle_number} (
+                  {formData.vehicle_size})
+                </p>
+                <p>
+                  <strong>Estimated Load:</strong> {selectedVehicleTons} tons
+                </p>
+                <p>
+                  <strong>Waste Type:</strong> {formData.waste_type}
+                </p>
+                <p>
+                  <strong>Appointment:</strong> {appointmentPreview}
+                </p>
+              </div>
+              <p className="price">Total: ₹{amount.toFixed(2)}</p>
 
-          <div className="payment-actions">
-            <button className="secondary" onClick={() => setStage("form")}>
-              Back To Edit
-            </button>
-            <button onClick={onConfirmPayment} disabled={isSubmitting}>
-              {isSubmitting ? "Processing..." : "Pay And Confirm"}
-            </button>
-          </div>
+              <div className="payment-actions">
+                <button className="secondary" onClick={() => setStage("form")}>
+                  Back to Edit Details
+                </button>
+                <button onClick={onConfirmPayment} disabled={isSubmitting}>
+                  {isSubmitting ? "Processing..." : "Pay and Confirm"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        <aside className="booking-aside" aria-label="Booking summary">
+          <h4>Booking Summary</h4>
+          <p>
+            <strong>Applicant:</strong>{" "}
+            {user?.user_metadata?.full_name || user?.email}
+          </p>
+          <p>
+            <strong>Vehicle Size:</strong>{" "}
+            {formData.vehicle_size || "Not selected"}
+          </p>
+          <p>
+            <strong>Waste Type:</strong> {formData.waste_type || "Not selected"}
+          </p>
+          <p>
+            <strong>Appointment:</strong> {appointmentPreview}
+          </p>
+          <p className="price">₹{amount.toFixed(2)}</p>
+          <p className="muted-text">
+            Final invoice and QR code will be generated right after successful
+            payment.
+          </p>
+        </aside>
+      </div>
     </section>
   );
 }

@@ -254,7 +254,9 @@ export default function StatisticsPage() {
   return (
     <section className="panel stats-page">
       <h2>Statistics Dashboard</h2>
-      <p>Overview of all waste drop-offs and revenue.</p>
+      <p className="muted-text">
+        Overview of waste drop-offs, operational status, and revenue trends.
+      </p>
 
       {errorMessage && <p className="error-text">{errorMessage}</p>}
 
@@ -421,66 +423,76 @@ export default function StatisticsPage() {
         </Card>
       </div>
 
-      <h3>Waste Type Breakdown</h3>
-      <div className="table-wrap stats-table-wrap">
-        <table className="stats-table">
-          <thead>
-            <tr>
-              <th>Waste Type</th>
-              <th>Count</th>
-              <th>Total Weight (tons)</th>
-              <th>Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {wasteTypeStats.map((item) => (
-              <tr key={item.type}>
-                <td data-label="Waste Type">{item.type}</td>
-                <td data-label="Count">{item.count}</td>
-                <td data-label="Total Weight (tons)">
-                  {item.weight.toFixed(2)}
-                </td>
-                <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
-              </tr>
-            ))}
-            {wasteTypeStats.length === 0 && (
+      <div className="section-block">
+        <h3>Waste Type Breakdown</h3>
+        <p className="muted-text">
+          Distribution by count, weight, and revenue.
+        </p>
+        <div className="table-wrap stats-table-wrap">
+          <table className="stats-table">
+            <thead>
               <tr>
-                <td colSpan="4">No data available.</td>
+                <th>Waste Type</th>
+                <th>Count</th>
+                <th>Total Weight (tons)</th>
+                <th>Revenue</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {wasteTypeStats.map((item) => (
+                <tr key={item.type}>
+                  <td data-label="Waste Type">{item.type}</td>
+                  <td data-label="Count">{item.count}</td>
+                  <td data-label="Total Weight (tons)">
+                    {item.weight.toFixed(2)}
+                  </td>
+                  <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
+                </tr>
+              ))}
+              {wasteTypeStats.length === 0 && (
+                <tr>
+                  <td colSpan="4">No data available.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <h3>Vehicle Size Breakdown</h3>
-      <div className="table-wrap stats-table-wrap">
-        <table className="stats-table">
-          <thead>
-            <tr>
-              <th>Vehicle Size</th>
-              <th>Count</th>
-              <th>Total Weight (tons)</th>
-              <th>Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vehicleSizeStats.map((item) => (
-              <tr key={item.size}>
-                <td data-label="Vehicle Size">{item.size}</td>
-                <td data-label="Count">{item.count}</td>
-                <td data-label="Total Weight (tons)">
-                  {item.weight.toFixed(2)}
-                </td>
-                <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
-              </tr>
-            ))}
-            {vehicleSizeStats.length === 0 && (
+      <div className="section-block">
+        <h3>Vehicle Size Breakdown</h3>
+        <p className="muted-text">
+          Vehicle category performance by volume and value.
+        </p>
+        <div className="table-wrap stats-table-wrap">
+          <table className="stats-table">
+            <thead>
               <tr>
-                <td colSpan="4">No data available.</td>
+                <th>Vehicle Size</th>
+                <th>Count</th>
+                <th>Total Weight (tons)</th>
+                <th>Revenue</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {vehicleSizeStats.map((item) => (
+                <tr key={item.size}>
+                  <td data-label="Vehicle Size">{item.size}</td>
+                  <td data-label="Count">{item.count}</td>
+                  <td data-label="Total Weight (tons)">
+                    {item.weight.toFixed(2)}
+                  </td>
+                  <td data-label="Revenue">₹{item.revenue.toFixed(2)}</td>
+                </tr>
+              ))}
+              {vehicleSizeStats.length === 0 && (
+                <tr>
+                  <td colSpan="4">No data available.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

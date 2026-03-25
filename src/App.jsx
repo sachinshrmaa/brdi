@@ -24,12 +24,7 @@ import {
   NavigationMenuList,
 } from "./components/ui/navigation-menu";
 
-const navLinkClasses = (active) =>
-  `inline-flex items-center rounded-lg border px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 ${
-    active
-      ? "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
-      : "border-slate-300 bg-white text-slate-700 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-800"
-  }`;
+const navLinkClasses = (active) => `nav-link ${active ? "is-active" : ""}`;
 
 function LandingPage() {
   return (
@@ -45,6 +40,43 @@ function LandingPage() {
           <p className="mt-2 text-sm text-slate-600 sm:text-base">
             Schedule your waste drop-off appointment today
           </p>
+        </div>
+
+        <div className="mt-8 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Step 1
+            </p>
+            <h3 className="mt-1 text-base font-bold text-slate-900">
+              Sign in and submit details
+            </h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Use Google sign-in and complete vehicle, waste, and appointment
+              details.
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Step 2
+            </p>
+            <h3 className="mt-1 text-base font-bold text-slate-900">
+              Confirm payment
+            </h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Review booking summary and complete payment to lock your slot.
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
+              Step 3
+            </p>
+            <h3 className="mt-1 text-base font-bold text-slate-900">
+              Show invoice QR at gate
+            </h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Download your receipt and present the generated QR at entry.
+            </p>
+          </div>
         </div>
 
         <div className="mt-8 flex justify-center">
@@ -65,6 +97,10 @@ function LandingPage() {
               We do NOT accept: Municipal waste, Organic waste, Hazardous
               materials, or Medical waste.
             </p>
+            <p className="mt-4 rounded-lg border border-cyan-200 bg-cyan-50 p-3 text-sm text-cyan-900">
+              Booking history and receipts are available in My Bookings after
+              sign-in.
+            </p>
           </CardContent>
         </Card>
       </CardContent>
@@ -76,6 +112,11 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [session, setSession] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     let isMounted = true;
@@ -121,14 +162,11 @@ function App() {
   }
 
   return (
-    <div className="app-shell mx-auto flex min-h-screen w-full max-w-7xl flex-col">
-      <div className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <Link
-            to="/"
-            className="flex items-center gap-3 text-inherit no-underline transition hover:opacity-90"
-          >
-            <Avatar className="h-11 w-auto overflow-visible rounded-none border-0 bg-transparent align-middle">
+    <>
+      <header className="global-navbar">
+        <div className="global-navbar-inner">
+          <Link to="/" className="brand-link">
+            <Avatar className="brand-avatar h-11 w-auto overflow-visible rounded-none border-0 bg-transparent align-middle">
               <AvatarImage
                 src="/balkapso-logo.jpg"
                 alt="BRDI logo"
@@ -138,19 +176,15 @@ function App() {
                 BRDI
               </AvatarFallback>
             </Avatar>
-            <div>
-              <p className="m-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                Waste Management
-              </p>
-              <h1 className="m-0 text-2xl font-bold tracking-tight text-cyan-700">
-                BRDI
-              </h1>
+            <div className="brand-copy">
+              <p className="brand-eyebrow">Waste Management</p>
+              <h1 className="brand-title">BRDI</h1>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <NavigationMenu>
-              <NavigationMenuList>
+          <div className="desktop-nav">
+            <NavigationMenu className="primary-nav-shell">
+              <NavigationMenuList className="primary-nav-list">
                 {!isAdminPath && (
                   <>
                     <NavigationMenuItem>
@@ -173,7 +207,7 @@ function App() {
                                 location.pathname === "/book",
                               )}
                             >
-                              Book Now
+                              Book Appointment
                             </Link>
                           </NavigationMenuLink>
                         </NavigationMenuItem>
@@ -228,43 +262,148 @@ function App() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-slate-300 bg-white text-slate-700 hover:bg-slate-100"
+                className="nav-signout-btn"
                 onClick={handleSignOut}
               >
                 Sign Out
               </Button>
             )}
           </div>
-        </div>
-      </div>
 
-      <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/book" element={<BookingPage />} />
-          <Route path="/my-bookings" element={<UserDashboard />} />
-          <Route path="/admin-login" element={<AdminPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/statistics" element={<StatisticsPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-
-      <footer className="px-4 pb-4 pt-2 sm:px-6 lg:px-8">
-        <Separator />
-        <div className="flex items-center justify-end pt-3">
-          {!isUserPath && !isAdminPath && (
-            <Link
-              to="/admin-login"
-              className="text-xs text-slate-400 no-underline transition hover:text-slate-600"
-              aria-label="Admin access"
-            >
-              Admin
-            </Link>
-          )}
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 22 22"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
+                <path d="M4 4l14 14M18 4L4 18" />
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 22 22"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
+                <path d="M3 7h16M3 11h16M3 15h16" />
+              </svg>
+            )}
+          </button>
         </div>
-      </footer>
-    </div>
+
+        {mobileMenuOpen && (
+          <div className="mobile-nav-panel">
+            {!isAdminPath && (
+              <>
+                <Link
+                  to="/"
+                  className={
+                    navLinkClasses(location.pathname === "/") +
+                    " mobile-nav-link"
+                  }
+                >
+                  Home
+                </Link>
+                {session && (
+                  <>
+                    <Link
+                      to="/book"
+                      className={
+                        navLinkClasses(location.pathname === "/book") +
+                        " mobile-nav-link"
+                      }
+                    >
+                      Book Appointment
+                    </Link>
+                    <Link
+                      to="/my-bookings"
+                      className={
+                        navLinkClasses(location.pathname === "/my-bookings") +
+                        " mobile-nav-link"
+                      }
+                    >
+                      My Bookings
+                    </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mobile-signout-btn"
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+            {isAdminPath && (
+              <>
+                <Link
+                  to="/admin"
+                  className={
+                    navLinkClasses(location.pathname === "/admin") +
+                    " mobile-nav-link"
+                  }
+                >
+                  Bookings
+                </Link>
+                <Link
+                  to="/admin/statistics"
+                  className={
+                    navLinkClasses(location.pathname === "/admin/statistics") +
+                    " mobile-nav-link"
+                  }
+                >
+                  Statistics
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </header>
+
+      <div className="app-shell mx-auto flex min-h-screen w-full max-w-7xl flex-col">
+        <div className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/book" element={<BookingPage />} />
+            <Route path="/my-bookings" element={<UserDashboard />} />
+            <Route path="/admin-login" element={<AdminPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/statistics" element={<StatisticsPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+
+        <footer className="px-4 pb-4 pt-2 sm:px-6 lg:px-8">
+          <Separator />
+          <div className="flex items-center justify-end pt-3">
+            {!isUserPath && !isAdminPath && (
+              <Link
+                to="/admin-login"
+                className="text-xs text-slate-400 no-underline transition hover:text-slate-600"
+                aria-label="Admin access"
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
 

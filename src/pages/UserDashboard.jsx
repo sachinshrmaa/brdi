@@ -4,11 +4,33 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { supabase } from "../lib/supabase";
 
+function getStatusMeta(booking) {
+  if (booking.cancelled_at) {
+    return { label: "Cancelled", className: "cancelled", icon: "✗" };
+  }
+
+  if (booking.checked_in_at) {
+    return { label: "Checked In", className: "checked-in", icon: "✓" };
+  }
+
+  return { label: "Pending", className: "pending", icon: "⏱" };
+}
+
 export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const pendingCount = bookings.filter(
+    (booking) => !booking.checked_in_at && !booking.cancelled_at,
+  ).length;
+  const checkedInCount = bookings.filter(
+    (booking) => booking.checked_in_at,
+  ).length;
+  const cancelledCount = bookings.filter(
+    (booking) => booking.cancelled_at,
+  ).length;
 
   useEffect(() => {
     async function loadUserBookings() {
@@ -173,10 +195,33 @@ export default function UserDashboard() {
       <div className="header-row">
         <div>
           <h2>My Bookings</h2>
-          <p>
+          <p className="muted-text">
             Signed in as <strong>{user.email}</strong>
           </p>
         </div>
+      </div>
+
+      <div
+        className="dashboard-kpis"
+        role="list"
+        aria-label="Booking status summary"
+      >
+        <article className="kpi-card" role="listitem">
+          <p className="kpi-label">Total Bookings</p>
+          <p className="kpi-value">{bookings.length}</p>
+        </article>
+        <article className="kpi-card" role="listitem">
+          <p className="kpi-label">Pending</p>
+          <p className="kpi-value">{pendingCount}</p>
+        </article>
+        <article className="kpi-card" role="listitem">
+          <p className="kpi-label">Checked In</p>
+          <p className="kpi-value">{checkedInCount}</p>
+        </article>
+        <article className="kpi-card" role="listitem">
+          <p className="kpi-label">Cancelled</p>
+          <p className="kpi-value">{cancelledCount}</p>
+        </article>
       </div>
 
       {errorMessage && <p className="error-text">{errorMessage}</p>}
@@ -190,217 +235,207 @@ export default function UserDashboard() {
         <div className="bookings-list">
           {bookings.map((booking) => (
             <div key={booking.id} className="booking-card">
-              {/* Hidden PDF content */}
-              <div id={`pdf-content-${booking.id}`} style={{ display: "none" }}>
-                <div
-                  style={{
-                    padding: "20px",
-                    background: "#fff",
-                    fontFamily: "Arial, sans-serif",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      textAlign: "center",
-                      borderBottom: "1px solid #dbe4ee",
-                      paddingBottom: "16px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <img
-                      src="/balkapso-logo.jpg"
-                      alt="Balkapso logo"
-                      style={{
-                        height: "64px",
-                        width: "auto",
-                        objectFit: "contain",
-                        marginBottom: "12px",
-                      }}
-                    />
-                    <h1
-                      style={{
-                        fontSize: "20px",
-                        margin: "0 0 6px",
-                        color: "#0f172a",
-                      }}
+              {(() => {
+                const status = getStatusMeta(booking);
+                return (
+                  <>
+                    {/* Hidden PDF content */}
+                    <div
+                      id={`pdf-content-${booking.id}`}
+                      style={{ display: "none" }}
                     >
-                      Balkapso Research and Development Institute
-                    </h1>
-                    <p
-                      style={{
-                        margin: "0 0 4px",
-                        fontSize: "13px",
-                        color: "#475569",
-                      }}
-                    >
-                      Gangtok, Sikkim - 737101
-                    </p>
-                    <p
-                      style={{
-                        margin: "0 0 14px",
-                        fontSize: "13px",
-                        color: "#475569",
-                      }}
-                    >
-                      contact@balkapso.com - +917076219337
-                    </p>
-                    <h2
-                      style={{
-                        textAlign: "center",
-                        fontSize: "16px",
-                        margin: 0,
-                      }}
-                    >
-                      Waste Drop-Off Booking Receipt
-                    </h2>
-                  </div>
+                      <div
+                        style={{
+                          padding: "20px",
+                          background: "#fff",
+                          fontFamily: "Arial, sans-serif",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            textAlign: "center",
+                            borderBottom: "1px solid #dbe4ee",
+                            paddingBottom: "16px",
+                            marginBottom: "20px",
+                          }}
+                        >
+                          <img
+                            src="/balkapso-logo.jpg"
+                            alt="Balkapso logo"
+                            style={{
+                              height: "64px",
+                              width: "auto",
+                              objectFit: "contain",
+                              marginBottom: "12px",
+                            }}
+                          />
+                          <h1
+                            style={{
+                              fontSize: "20px",
+                              margin: "0 0 6px",
+                              color: "#0f172a",
+                            }}
+                          >
+                            Balkapso Research and Development Institute
+                          </h1>
+                          <p
+                            style={{
+                              margin: "0 0 4px",
+                              fontSize: "13px",
+                              color: "#475569",
+                            }}
+                          >
+                            Gangtok, Sikkim - 737101
+                          </p>
+                          <p
+                            style={{
+                              margin: "0 0 14px",
+                              fontSize: "13px",
+                              color: "#475569",
+                            }}
+                          >
+                            contact@balkapso.com - +917076219337
+                          </p>
+                          <h2
+                            style={{
+                              textAlign: "center",
+                              fontSize: "16px",
+                              margin: 0,
+                            }}
+                          >
+                            Waste Drop-Off Booking Receipt
+                          </h2>
+                        </div>
 
-                  <div style={{ marginBottom: "15px" }}>
-                    <p>
-                      <strong>Booking ID:</strong> {booking.id}
-                    </p>
-                    <p>
-                      <strong>Name:</strong> {booking.applicant_name}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {booking.email}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {booking.phone}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {booking.address}
-                    </p>
-                    <p>
-                      <strong>Vehicle:</strong> {booking.vehicle_number}
-                    </p>
-                    <p>
-                      <strong>Driver:</strong> {booking.driver_name}
-                    </p>
-                    <p>
-                      <strong>Waste Type:</strong> {booking.waste_type}
-                    </p>
-                    <p>
-                      <strong>Vehicle Size:</strong> {booking.vehicle_size}
-                    </p>
-                    <p>
-                      <strong>Estimated Weight:</strong>{" "}
-                      {booking.estimated_weight_tons} tons
-                    </p>
-                    <p>
-                      <strong>Appointment:</strong>{" "}
-                      {new Date(booking.appointment_at).toLocaleString()}
-                    </p>
-                    <p>
-                      <strong>Amount Paid:</strong> ₹
-                      {Number(booking.amount).toFixed(2)}
-                    </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {booking.checked_in_at ? "Checked In" : "Pending"}
-                    </p>
-                  </div>
+                        <div style={{ marginBottom: "15px" }}>
+                          <p>
+                            <strong>Booking ID:</strong> {booking.id}
+                          </p>
+                          <p>
+                            <strong>Name:</strong> {booking.applicant_name}
+                          </p>
+                          <p>
+                            <strong>Email:</strong> {booking.email}
+                          </p>
+                          <p>
+                            <strong>Phone:</strong> {booking.phone}
+                          </p>
+                          <p>
+                            <strong>Address:</strong> {booking.address}
+                          </p>
+                          <p>
+                            <strong>Vehicle:</strong> {booking.vehicle_number}
+                          </p>
+                          <p>
+                            <strong>Driver:</strong> {booking.driver_name}
+                          </p>
+                          <p>
+                            <strong>Waste Type:</strong> {booking.waste_type}
+                          </p>
+                          <p>
+                            <strong>Vehicle Size:</strong>{" "}
+                            {booking.vehicle_size}
+                          </p>
+                          <p>
+                            <strong>Estimated Weight:</strong>{" "}
+                            {booking.estimated_weight_tons} tons
+                          </p>
+                          <p>
+                            <strong>Appointment:</strong>{" "}
+                            {new Date(booking.appointment_at).toLocaleString()}
+                          </p>
+                          <p>
+                            <strong>Amount Paid:</strong> ₹
+                            {Number(booking.amount).toFixed(2)}
+                          </p>
+                          <p>
+                            <strong>Status:</strong>{" "}
+                            {booking.checked_in_at ? "Checked In" : "Pending"}
+                          </p>
+                        </div>
 
-                  <div style={{ textAlign: "center", marginTop: "20px" }}>
-                    <p style={{ fontSize: "12px", marginBottom: "10px" }}>
-                      QR Code for Entry Gate
-                    </p>
-                    <QRCodeSVG
-                      value={booking.qr_token}
-                      size={150}
-                      includeMargin
-                    />
-                  </div>
+                        <div style={{ textAlign: "center", marginTop: "20px" }}>
+                          <p style={{ fontSize: "12px", marginBottom: "10px" }}>
+                            QR Code for Entry Gate
+                          </p>
+                          <QRCodeSVG
+                            value={booking.qr_token}
+                            size={150}
+                            includeMargin
+                          />
+                        </div>
 
-                  <div
-                    style={{
-                      textAlign: "center",
-                      marginTop: "20px",
-                      fontSize: "10px",
-                      color: "#666",
-                    }}
-                  >
-                    <p>Present this QR code at the facility gate for entry.</p>
-                    <p>Generated: {new Date().toLocaleString()}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Visible card */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                  gap: "1rem",
-                }}
-              >
-                <div>
-                  <h3>Booking #{booking.id}</h3>
-                  <p>
-                    <strong>Status:</strong>{" "}
-                    {booking.cancelled_at ? (
-                      <span className="status-badge cancelled">
-                        ✗ Cancelled
-                      </span>
-                    ) : booking.checked_in_at ? (
-                      <span className="status-badge checked-in">
-                        ✓ Checked In
-                      </span>
-                    ) : (
-                      <span className="status-badge pending">⏱ Pending</span>
-                    )}
-                  </p>
-                  <p>
-                    <strong>Appointment:</strong>{" "}
-                    {new Date(booking.appointment_at).toLocaleString()}
-                  </p>
-                  <p>
-                    <strong>Waste Type:</strong> {booking.waste_type}
-                  </p>
-                  <p>
-                    <strong>Load:</strong> {booking.estimated_weight_tons} tons
-                    ({booking.vehicle_size})
-                  </p>
-                  <p>
-                    <strong>Amount:</strong> ₹
-                    {Number(booking.amount).toFixed(2)}
-                  </p>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  {!booking.cancelled_at && (
-                    <div className="qr-small">
-                      <QRCodeSVG value={booking.qr_token} size={100} />
+                        <div
+                          style={{
+                            textAlign: "center",
+                            marginTop: "20px",
+                            fontSize: "10px",
+                            color: "#666",
+                          }}
+                        >
+                          <p>
+                            Present this QR code at the facility gate for entry.
+                          </p>
+                          <p>Generated: {new Date().toLocaleString()}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <button
-                    onClick={() => downloadPDF(booking)}
-                    className="secondary small"
-                    disabled={booking.cancelled_at}
-                  >
-                    Download PDF
-                  </button>
-                  {!booking.cancelled_at && !booking.checked_in_at && (
-                    <button
-                      onClick={() => cancelBooking(booking.id)}
-                      className="btn-cancel small"
-                    >
-                      Cancel Booking
-                    </button>
-                  )}
-                </div>
-              </div>
+
+                    {/* Visible card */}
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h3 className="mb-1">Booking #{booking.id}</h3>
+                        <p>
+                          <span className={`status-badge ${status.className}`}>
+                            {status.icon} {status.label}
+                          </span>
+                        </p>
+                        <p>
+                          <strong>Appointment:</strong>{" "}
+                          {new Date(booking.appointment_at).toLocaleString()}
+                        </p>
+                        <p>
+                          <strong>Waste Type:</strong> {booking.waste_type}
+                        </p>
+                        <p>
+                          <strong>Load:</strong> {booking.estimated_weight_tons}{" "}
+                          tons ({booking.vehicle_size})
+                        </p>
+                        <p>
+                          <strong>Amount:</strong> ₹
+                          {Number(booking.amount).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-2">
+                        {!booking.cancelled_at && (
+                          <div className="qr-small">
+                            <QRCodeSVG value={booking.qr_token} size={100} />
+                          </div>
+                        )}
+                        <button
+                          onClick={() => downloadPDF(booking)}
+                          className="secondary small"
+                          disabled={booking.cancelled_at}
+                        >
+                          Download PDF
+                        </button>
+                        {!booking.cancelled_at && !booking.checked_in_at && (
+                          <button
+                            onClick={() => cancelBooking(booking.id)}
+                            className="btn-cancel small"
+                          >
+                            Cancel Booking
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           ))}
         </div>
