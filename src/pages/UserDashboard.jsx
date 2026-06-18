@@ -227,10 +227,12 @@ export default function UserDashboard() {
       {errorMessage && <p className="error-text">{errorMessage}</p>}
 
       {bookings.length === 0 ? (
-        <p>
-          You don't have any bookings yet.{" "}
-          <a href="/">Create your first booking</a>
-        </p>
+        <div className="empty-state">
+          <p>You don't have any bookings yet.</p>
+          <a href="/book" className="btn-hero primary" style={{ marginTop: "1rem" }}>
+            Create your first booking
+          </a>
+        </div>
       ) : (
         <div className="bookings-list">
           {bookings.map((booking) => (

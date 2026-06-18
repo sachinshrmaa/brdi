@@ -445,37 +445,52 @@ export default function BookingPage() {
 
   if (stage === "auth") {
     return (
-      <section className="panel auth-panel">
-        <h2>Sign In to Book Appointment</h2>
-        <p>
-          Please sign in with your Google account to schedule a waste drop-off
-          appointment.
-        </p>
+      <div className="auth-wrap">
+        <section className="panel auth-card">
+          <span className="auth-logo">
+            <img src="/balkapso-logo.jpg" alt="BRDI" />
+          </span>
+          <span
+            className="soon-badge"
+            style={{ margin: "0 auto 0.85rem", display: "inline-flex" }}
+          >
+            Coming Soon
+          </span>
+          <h2>Sign in to book</h2>
+          <p>
+            Continue with your Google account to schedule a construction waste
+            drop-off appointment.
+          </p>
 
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
+          {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-        <button onClick={signInWithGoogle} className="google-btn">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path
-              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-              fill="#4285F4"
-            />
-            <path
-              d="M9.003 18c2.43 0 4.467-.806 5.956-2.184L12.05 13.56c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z"
-              fill="#34A853"
-            />
-            <path
-              d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z"
-              fill="#FBBC05"
-            />
-            <path
-              d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
-              fill="#EA4335"
-            />
-          </svg>
-          Continue with Google
-        </button>
-      </section>
+          <button onClick={signInWithGoogle} className="google-btn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path
+                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+                fill="#4285F4"
+              />
+              <path
+                d="M9.003 18c2.43 0 4.467-.806 5.956-2.184L12.05 13.56c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z"
+                fill="#34A853"
+              />
+              <path
+                d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9.001c0 1.452.348 2.827.957 4.041l3.007-2.332z"
+                fill="#FBBC05"
+              />
+              <path
+                d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
+                fill="#EA4335"
+              />
+            </svg>
+            Continue with Google
+          </button>
+
+          <p className="auth-fineprint">
+            We only use your account to identify your bookings. No spam, ever.
+          </p>
+        </section>
+      </div>
     );
   }
 
@@ -486,6 +501,32 @@ export default function BookingPage() {
           <h2>Construction Waste Booking</h2>
           <p className="muted-text">
             Signed in as <strong>{user?.email}</strong>
+          </p>
+        </div>
+      </div>
+
+      <div className="notice-soon" role="status">
+        <span className="notice-icon" aria-hidden="true">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </span>
+        <div>
+          <h4>Booking is launching soon</h4>
+          <p>
+            You can preview the booking experience below, but live slot
+            reservations aren't open to the public yet. Please check back shortly
+            — we'll announce when bookings go live.
           </p>
         </div>
       </div>
@@ -645,44 +686,53 @@ export default function BookingPage() {
                 </div>
               </div>
 
-              <button type="submit" className="full-width">
-                Continue to Payment Review
+              <button type="submit" className="full-width btn-continue">
+                Continue to Payment Review →
               </button>
             </form>
           )}
 
           {stage === "payment" && (
             <div className="payment-box">
-              <h3>Confirm Payment and Booking</h3>
+              <h3>Review &amp; confirm payment</h3>
               <p className="muted-text">
-                Review your details before confirming payment.
+                Please confirm the details below before completing your payment.
               </p>
-              <div className="summary-details">
-                <p>
-                  <strong>Phone:</strong> {formData.phone}
-                </p>
-                <p>
-                  <strong>Vehicle:</strong> {formData.vehicle_number} (
-                  {formData.vehicle_size})
-                </p>
-                <p>
-                  <strong>Estimated Load:</strong> {selectedVehicleTons} tons
-                </p>
-                <p>
-                  <strong>Waste Type:</strong> {formData.waste_type}
-                </p>
-                <p>
-                  <strong>Appointment:</strong> {appointmentPreview}
-                </p>
+              <dl className="summary-rows summary-details">
+                <div className="summary-row">
+                  <dt>Phone</dt>
+                  <dd>{formData.phone}</dd>
+                </div>
+                <div className="summary-row">
+                  <dt>Vehicle</dt>
+                  <dd>
+                    {formData.vehicle_number} ({formData.vehicle_size})
+                  </dd>
+                </div>
+                <div className="summary-row">
+                  <dt>Estimated load</dt>
+                  <dd>{selectedVehicleTons} tons</dd>
+                </div>
+                <div className="summary-row">
+                  <dt>Waste type</dt>
+                  <dd>{formData.waste_type}</dd>
+                </div>
+                <div className="summary-row">
+                  <dt>Appointment</dt>
+                  <dd>{appointmentPreview}</dd>
+                </div>
+              </dl>
+              <div className="summary-total">
+                <span>Total payable</span>
+                <span className="price">₹{amount.toFixed(2)}</span>
               </div>
-              <p className="price">Total: ₹{amount.toFixed(2)}</p>
 
               <div className="payment-actions">
                 <button className="secondary" onClick={() => setStage("form")}>
-                  Back to Edit Details
+                  Back to edit
                 </button>
                 <button onClick={onConfirmPayment} disabled={isSubmitting}>
-                  {isSubmitting ? "Processing..." : "Pay and Confirm"}
+                  {isSubmitting ? "Processing…" : "Pay & Confirm"}
                 </button>
               </div>
             </div>
@@ -691,23 +741,34 @@ export default function BookingPage() {
 
         <aside className="booking-aside" aria-label="Booking summary">
           <h4>Booking Summary</h4>
-          <p>
-            <strong>Applicant:</strong>{" "}
-            {user?.user_metadata?.full_name || user?.email}
-          </p>
-          <p>
-            <strong>Vehicle Size:</strong>{" "}
-            {formData.vehicle_size || "Not selected"}
-          </p>
-          <p>
-            <strong>Waste Type:</strong> {formData.waste_type || "Not selected"}
-          </p>
-          <p>
-            <strong>Appointment:</strong> {appointmentPreview}
-          </p>
-          <p className="price">₹{amount.toFixed(2)}</p>
-          <p className="muted-text">
-            Final invoice and QR code will be generated right after successful
+          <dl className="summary-rows">
+            <div className="summary-row">
+              <dt>Applicant</dt>
+              <dd>{user?.user_metadata?.full_name || user?.email}</dd>
+            </div>
+            <div className="summary-row">
+              <dt>Vehicle size</dt>
+              <dd>{formData.vehicle_size || "—"}</dd>
+            </div>
+            <div className="summary-row">
+              <dt>Estimated load</dt>
+              <dd>{selectedVehicleTons ? `${selectedVehicleTons} tons` : "—"}</dd>
+            </div>
+            <div className="summary-row">
+              <dt>Waste type</dt>
+              <dd>{formData.waste_type || "—"}</dd>
+            </div>
+            <div className="summary-row">
+              <dt>Appointment</dt>
+              <dd>{appointmentPreview}</dd>
+            </div>
+          </dl>
+          <div className="summary-total">
+            <span>Total payable</span>
+            <span className="price">₹{amount.toFixed(2)}</span>
+          </div>
+          <p className="muted-text booking-aside-note">
+            Final invoice and QR code are generated instantly after successful
             payment.
           </p>
         </aside>

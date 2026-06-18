@@ -1,35 +1,75 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
+/* =========================================================
+   BRDI Design System
+   Eco-industrial palette · premium light theme
+   ========================================================= */
 :root {
-  --ink: #0f172a;
-  --ink-light: #1e293b;
-  --muted: #475569;
-  --muted-light: #94a3b8;
-  --accent: #0f766e;
-  --accent-hover: #115e59;
-  --accent-soft: #ccfbf1;
-  --accent-bg: #f0fdfa;
-  --secondary: #0e7490;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
+  /* Brand — deep forest teal */
+  --brand-950: #042f2c;
+  --brand-900: #064e44;
+  --brand-800: #0a6b5d;
+  --brand-700: #0f766e;
+  --brand-600: #0d9488;
+  --brand-500: #14b8a6;
+  --brand-400: #2dd4bf;
+  --brand-300: #5eead4;
+  --brand-100: #ccfbf1;
+  --brand-50: #f0fdfa;
+
+  /* Accent — warm amber (energy / signage) */
+  --accent: #f59e0b;
+  --accent-strong: #d97706;
+  --lime: #84cc16;
+
+  /* Neutrals */
+  --ink: #0a1916;
+  --ink-soft: #14302b;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --muted: #51635e;
+  --muted-light: #8a9b95;
+  --line: #e3eae7;
+  --line-soft: #eef4f2;
+  --surface: #ffffff;
+  --surface-2: #f6faf8;
+  --canvas: #f4f8f6;
+
+  /* Status */
   --success: #15803d;
   --success-bg: #dcfce7;
+  --success-line: #86efac;
   --warning: #b45309;
   --warning-bg: #fef3c7;
+  --warning-line: #fcd34d;
   --danger: #b91c1c;
   --danger-bg: #fee2e2;
-  --card-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --card-shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --danger-line: #fca5a5;
 
-  font-family:
-    "Source Sans 3",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  /* Aliases kept for legacy class usage */
+  --ink-light: var(--ink-soft);
+  --border: var(--line);
+  --border-light: var(--line-soft);
+  --accent-hover: var(--brand-800);
+  --accent-soft: var(--brand-100);
+  --accent-bg: var(--brand-50);
+  --secondary: var(--brand-600);
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(6, 35, 31, 0.06);
+  --shadow-sm: 0 2px 8px -2px rgba(6, 35, 31, 0.1), 0 1px 3px rgba(6, 35, 31, 0.06);
+  --card-shadow: 0 4px 18px -6px rgba(8, 51, 45, 0.12), 0 2px 6px -2px rgba(8, 51, 45, 0.08);
+  --card-shadow-lg: 0 24px 48px -16px rgba(8, 51, 45, 0.22), 0 8px 20px -10px rgba(8, 51, 45, 0.14);
+  --glow: 0 18px 40px -14px rgba(13, 148, 136, 0.45);
+
+  /* Radius */
+  --r-sm: 0.625rem;
+  --r-md: 0.9rem;
+  --r-lg: 1.25rem;
+  --r-xl: 1.75rem;
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
@@ -42,39 +82,108 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
   color: var(--ink);
-  background:
-    radial-gradient(1200px 500px at 10% -10%, #ccfbf1 0%, transparent 60%),
-    radial-gradient(1000px 450px at 90% -20%, #dbeafe 0%, transparent 55%),
-    #f8fafc;
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(900px 480px at 8% -8%, rgba(45, 212, 191, 0.16) 0%, transparent 60%),
+    radial-gradient(800px 420px at 100% -12%, rgba(20, 184, 166, 0.12) 0%, transparent 55%),
+    radial-gradient(700px 500px at 50% 120%, rgba(132, 204, 22, 0.07) 0%, transparent 60%);
+  background-attachment: fixed;
 }
 
 #root {
   min-height: 100vh;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Manrope", "Source Sans 3", sans-serif;
+/* Typography ------------------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
 
-h1 {
-  font-size: 2rem;
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+::selection {
+  background: var(--brand-300);
+  color: var(--brand-950);
 }
-h2 {
-  font-size: 1.5rem;
+
+a {
+  color: var(--brand-700);
 }
-h3 {
-  font-size: 1.25rem;
+
+/* Custom scrollbar ----------------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-300) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--brand-300);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-500);
+  background-clip: content-box;
+}
+
+/* Animations ----------------------------------------------- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(20, 184, 166, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.reveal {
+  opacity: 0;
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.15s; }
+.reveal-3 { animation-delay: 0.25s; }
+.reveal-4 { animation-delay: 0.35s; }
+.reveal-5 { animation-delay: 0.45s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

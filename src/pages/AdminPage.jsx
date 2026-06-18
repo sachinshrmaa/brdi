@@ -337,38 +337,57 @@ export default function AdminPage() {
 
   if (!session) {
     return (
-      <section className="panel">
-        <h2>Admin Login</h2>
-        <p>Sign in to view all appointment bookings.</p>
+      <div className="auth-wrap">
+        <section className="panel auth-card">
+          <span className="auth-logo shield">
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+          </span>
+          <h2>Admin Portal</h2>
+          <p>Sign in with your administrator credentials to manage bookings.</p>
 
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
+          {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-        <form className="admin-login" onSubmit={login}>
-          <label>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </label>
+          <form className="admin-login" onSubmit={login}>
+            <label>
+              Email
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="admin@balkapso.com"
+                required
+              />
+            </label>
 
-          <label>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </label>
+            <label>
+              Password
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </label>
 
-          <button type="submit" disabled={isLoggingIn}>
-            {isLoggingIn ? "Logging in..." : "Login"}
-          </button>
-        </form>
-      </section>
+            <button type="submit" disabled={isLoggingIn}>
+              {isLoggingIn ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+        </section>
+      </div>
     );
   }
 
